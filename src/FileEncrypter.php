@@ -89,7 +89,7 @@ class FileEncrypter
         $numberOfChunks = ceil(filesize($sourcePath) / (16 * self::FILE_ENCRYPTION_BLOCKS));
 
         $i = 0;
-        while (!feof($fpIn)) {
+        while (! feof($fpIn)) {
             $plaintext = fread($fpIn, 16 * self::FILE_ENCRYPTION_BLOCKS);
             $ciphertext = openssl_encrypt($plaintext, $this->cipher, $this->key, OPENSSL_RAW_DATA, $iv);
 
@@ -136,7 +136,7 @@ class FileEncrypter
         $numberOfChunks = ceil((filesize($sourcePath) - 16) / (16 * (self::FILE_ENCRYPTION_BLOCKS + 1)));
 
         $i = 0;
-        while (!feof($fpIn)) {
+        while (! feof($fpIn)) {
             // We have to read one block more for decrypting than for encrypting because of the initialization vector
             $ciphertext = fread($fpIn, 16 * (self::FILE_ENCRYPTION_BLOCKS + 1));
             $plaintext = openssl_decrypt($ciphertext, $this->cipher, $this->key, OPENSSL_RAW_DATA, $iv);
