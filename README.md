@@ -12,7 +12,7 @@ This package is forked from [soarecostin/file-vault](https://github.com/soarecos
 
 ## Installation and usage
 
-This package requires PHP 7.2 and Laravel 5.8 or higher.  
+This package requires PHP 8.0 and Laravel 8.0 or higher.  
 
 You can install the package via composer:
 
@@ -187,10 +187,6 @@ Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recen
 ## Contributing
 
 Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-### Security
-
-If you discover any security related issues, please email dev@brainstud.com instead of using the issue tracker.
 
 ## Credits
 
