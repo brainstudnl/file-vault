@@ -12,26 +12,24 @@ class FileVault
      *
      * @var string
      */
-    protected $disk;
+    protected string $disk;
 
     /**
      * The encryption key.
      *
      * @var string
      */
-    protected $key;
+    protected string $key;
 
     /**
      * The algorithm used for encryption.
      *
      * @var string
      */
-    protected $cipher;
+    protected string $cipher;
 
     /**
      * The storage adapter.
-     *
-     * @var string
      */
     protected $adapter;
 
@@ -45,10 +43,10 @@ class FileVault
     /**
      * Set the disk where the files are located.
      *
-     * @param  string  $disk
+     * @param string $disk
      * @return $this
      */
-    public function disk($disk)
+    public function disk(string $disk): static
     {
         $this->disk = $disk;
 
@@ -58,10 +56,10 @@ class FileVault
     /**
      * Set the encryption key.
      *
-     * @param  string  $key
+     * @param string $key
      * @return $this
      */
-    public function key($key)
+    public function key($key): static
     {
         $this->key = $key;
 
@@ -72,8 +70,9 @@ class FileVault
      * Create a new encryption key for the given cipher.
      *
      * @return string
+     * @throws \Exception
      */
-    public static function generateKey()
+    public static function generateKey(): string
     {
         return random_bytes(config('file-vault.cipher') === 'AES-128-CBC' ? 16 : 32);
     }
@@ -82,10 +81,12 @@ class FileVault
      * Encrypt the passed file and saves the result in a new file with ".enc" as suffix.
      *
      * @param string $sourceFile Path to file that should be encrypted, relative to the storage disk specified
-     * @param string $destFile   File name where the encryped file should be written to, relative to the storage disk specified
+     * @param string|null $destFile File name where the encrypted file should be written to, relative to the storage disk specified
+     * @param bool $deleteSource Delete the source file after encrypting
      * @return $this
+     * @throws \Exception
      */
-    public function encrypt($sourceFile, $destFile = null, $deleteSource = true)
+    public function encrypt(string $sourceFile, ?string $destFile = null, bool $deleteSource = true): static
     {
         $this->registerServices();
 
@@ -107,27 +108,36 @@ class FileVault
         return $this;
     }
 
-    public function encryptCopy($sourceFile, $destFile = null)
+    /**
+     * Encrypt the passed file and saves the result in a new file with ".enc" as suffix. The source file is not deleted.
+     *
+     * @param string $sourceFile Path to file that should be encrypted, relative to the storage disk specified
+     * @param string|null $destFile File name where the encrypted file should be written to, relative to the storage disk specified
+     * @return $this
+     * @throws \Exception
+     */
+    public function encryptCopy(string $sourceFile, ?string $destFile = null): static
     {
         return self::encrypt($sourceFile, $destFile, false);
     }
 
     /**
-     * Dencrypt the passed file and saves the result in a new file, removing the
+     * Decrypt the passed file and saves the result in a new file, removing the
      * last 4 characters from file name.
      *
      * @param string $sourceFile Path to file that should be decrypted
-     * @param string $destFile   File name where the decryped file should be written to.
+     * @param string|null $destFile File name where the decrypted file should be written to.
      * @return $this
+     * @throws \Exception
      */
-    public function decrypt($sourceFile, $destFile = null, $deleteSource = true)
+    public function decrypt(string $sourceFile, ?string $destFile = null, bool $deleteSource = true): static
     {
         $this->registerServices();
 
         if (is_null($destFile)) {
             $destFile = Str::endsWith($sourceFile, '.enc')
-                        ? Str::replaceLast('.enc', '', $sourceFile)
-                        : $sourceFile.'.dec';
+                ? Str::replaceLast('.enc', '', $sourceFile)
+                : $sourceFile . '.dec';
         }
 
         $sourcePath = $this->getFilePath($sourceFile);
@@ -144,12 +154,24 @@ class FileVault
         return $this;
     }
 
-    public function decryptCopy($sourceFile, $destFile = null)
+    /**
+     * Decrypt the passed file and saves the result in a new file, removing the
+     * last 4 characters from file name. Keep the source file
+     *
+     * @param string $sourceFile Path to file that should be decrypted
+     * @param string|null $destFile File name where the decrypted file should be written to.
+     * @return $this
+     * @throws \Exception
+     */
+    public function decryptCopy(string $sourceFile, ?string $destFile = null): static
     {
         return self::decrypt($sourceFile, $destFile, false);
     }
 
-    public function streamDecrypt($sourceFile)
+    /**
+     * @throws \Exception
+     */
+    public function streamDecrypt($sourceFile): bool
     {
         $this->registerServices();
 
@@ -161,10 +183,10 @@ class FileVault
         return $encrypter->decrypt($sourcePath, 'php://output');
     }
 
-    protected function getFilePath($file)
+    protected function getFilePath($file): string
     {
         if ($this->isS3File()) {
-            return "s3://{$this->adapter->getBucket()}/{$file}";
+            return "s3://{$this->adapter->getBucket()}/$file";
         }
 
         return Storage::disk($this->disk)->path($file);

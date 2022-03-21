@@ -92,7 +92,7 @@ You can also specify a different name for the encrypted file by passing in a sec
 FileVault::encrypt('file.txt', 'encrypted.txt');
 ```
 
-The following examples both achive the same results as above, with the only difference that the original file is not deleted:
+The following examples both achieve the same results as above, with the only difference that the original file is not deleted:
 ``` php
 // save the encrypted copy to file.txt.enc
 FileVault::encryptCopy('file.txt');
