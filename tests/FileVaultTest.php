@@ -2,10 +2,10 @@
 
 namespace Brainstud\FileVault\Tests;
 
-use Illuminate\Support\Facades\Storage;
-use Orchestra\Testbench\TestCase;
 use Brainstud\FileVault\Facades\FileVault;
 use Brainstud\FileVault\FileVaultServiceProvider;
+use Illuminate\Support\Facades\Storage;
+use Orchestra\Testbench\TestCase;
 
 class FileVaultTest extends TestCase
 {

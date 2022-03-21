@@ -99,6 +99,7 @@ class FileEncrypter
                 && $i + 1 < $numberOfChunks
             ) {
                 fseek($fpIn, 16 * self::FILE_ENCRYPTION_BLOCKS * $i);
+
                 continue;
             }
 
@@ -145,6 +146,7 @@ class FileEncrypter
                 && $i + 1 < $numberOfChunks
             ) {
                 fseek($fpIn, 16 + 16 * (self::FILE_ENCRYPTION_BLOCKS + 1) * $i);
+
                 continue;
             }
 
